@@ -63,10 +63,11 @@ Now you can use the `<Ctrl-G>` shortcut in LazyGit to invoke Commit Oracle.
 
 1. The script extracts the diff of staged changes.
 2. It sends this diff to an LLM, requesting commit message suggestions.
-3. The AI generates multiple commit messages following the Conventional Commits format.
+3. The LLM generates multiple commit messages following the Conventional Commits format.
 4. FZF presents these messages for you to browse and select.
 5. You can edit the selected message in your preferred text editor.
 6. The script commits the changes with your chosen (and possibly edited) message.
+   In case you don't save the message, the script will abort the commit.
 
 ## Contributing
 
