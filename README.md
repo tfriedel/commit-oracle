@@ -12,20 +12,20 @@ Commit Oracle is a smart Git commit message generator that leverages AI to sugge
 
 ## Requirements
 
-- [FZF](https://github.com/junegunn/fzf) (Command-line fuzzy finder)
-- [aichat](https://github.com/sigoden/aichat) CLI tool for interacting with OpenAI's ChatGPT and other LLMs
+- [FZF](https://github.com/junegunn/fzf) - fuzzy finder
+- [aichat](https://github.com/sigoden/aichat) - CLI tool for interacting with OpenAI's ChatGPT and other LLMs
 
 ## Installation
 
 1. Clone this repository:
 
-   ```
+   ```sh
    git clone https://github.com/tfriedel/commit-oracle.git
    ```
 
 2. Add the script to your PATH. Add this line to your `~/.bashrc` or `~/.zshrc`:
 
-   ```
+   ```sh
    export PATH=$PATH:/path/to/commit-oracle
    ```
 
@@ -39,7 +39,7 @@ Commit Oracle is a smart Git commit message generator that leverages AI to sugge
 
 Run the script in your Git repository after staging your changes:
 
-```
+```sh
 commit-oracle.sh
 ```
 
