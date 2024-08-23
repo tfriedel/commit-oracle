@@ -31,7 +31,7 @@ Commit Oracle is a smart Git commit message generator that leverages AI to sugge
 
 3. Source your updated RC file or restart your terminal.
 
-4. Install [aichat](https://github.com/sigoden/aichat) by following the instructions in the repository.
+4. Install [aichat](https://github.com/sigoden/aichat) and [FZF](https://github.com/junegunn/fzf) by following the instructions in the repositories.
 
 ## Usage
 
