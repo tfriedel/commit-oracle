@@ -53,6 +53,8 @@ customCommands:
     description: Pick LLM commit
     loadingText: "waiting for LLM to generate commit messages..."
     command: commit-oracle.sh
+    # to use another editor
+    # command: export EDITOR=nvim && commit-oracle.sh
     context: files
     subprocess: true
 ```

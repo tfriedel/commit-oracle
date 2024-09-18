@@ -1,5 +1,12 @@
 #!/bin/bash
-aichat "Please suggest 5 commit messages, given the following diff:
+
+# Check if there are any staged changes
+if git diff --cached --quiet; then
+  echo "No staged changes detected. Nothing to commit."
+  exit 0
+fi
+
+selected_commit_message=$(aichat "Please suggest 5 commit messages, given the following diff:
 
 \`\`\`diff
 $(git --no-pager diff --no-color --no-ext-diff --cached)
@@ -15,7 +22,6 @@ $(git --no-pager diff --no-color --no-ext-diff --cached)
 
 [optional footer]
 \`\`\` 
-
 
 2. **Relevance:** Avoid mentioning a module name unless it's directly relevant
 to the change.
@@ -39,7 +45,7 @@ $(git log -n 10 --pretty=format:'%h %s')
 **Output Template**
 
 Follow this output template and ONLY output raw commit messages without
-numbers or other decorations. Separat each commit message with \`---\`.
+numbers or other decorations. Separate each commit message with \`---\`.
 
 fix(app): add password regex pattern
 ---
@@ -92,17 +98,37 @@ for your best commit, not the best average commit. It's better to cover more
 scenarios than include a lot of overlap.
 
 Write your commit messages below in the format shown in Output Template section above." |
-  awk 'BEGIN {RS="---"; ORS="\0"} NF {sub(/^\n+/, ""); print}' |
-  fzf --height 20 --border --ansi --read0 --no-sort --preview 'echo {} | sed "s/\x0/\n---\n/g"' --with-nth=1 --delimiter='\n' --preview-window=up:wrap |
-  xargs -0 -I {} bash -c '
-      COMMIT_MSG_FILE=$(mktemp)
-      printf "%s" "$1" > "$COMMIT_MSG_FILE"
-      MOD_TIME_BEFORE=$(stat -c %Y "$COMMIT_MSG_FILE")
-      ${EDITOR:-vim} "$COMMIT_MSG_FILE"
-      MOD_TIME_AFTER=$(stat -c %Y "$COMMIT_MSG_FILE")
-      if [ "$MOD_TIME_BEFORE" -ne "$MOD_TIME_AFTER" ]; then
-          git commit -F "$COMMIT_MSG_FILE"
-      else
-          echo "Commit message was not saved, commit aborted."
-      fi
-      rm -f "$COMMIT_MSG_FILE"' _ {}
+  awk 'BEGIN {RS="---"} NF {sub(/^\n+/, ""); printf "%s%c", $0, 0}' |
+  fzf --height 20 --border --ansi --read0 --no-sort \
+    --with-nth=1 --delimiter='\n' \
+    --preview 'echo {}' \
+    --preview-window=up:wrap)
+
+if [ -z "$selected_commit_message" ]; then
+  echo "No commit message selected."
+  exit 0
+fi
+
+COMMIT_MSG_FILE=$(mktemp)
+printf "%s" "$selected_commit_message" >"$COMMIT_MSG_FILE"
+
+# Store initial checksum
+CHECKSUM_BEFORE=$(shasum "$COMMIT_MSG_FILE" | awk '{ print $1 }')
+
+# Open the editor
+"${EDITOR:-vim}" "$COMMIT_MSG_FILE"
+
+# Store checksum after editing
+CHECKSUM_AFTER=$(shasum "$COMMIT_MSG_FILE" | awk '{ print $1 }')
+
+# Compare checksums
+if [ "$CHECKSUM_BEFORE" != "$CHECKSUM_AFTER" ]; then
+  # Proceed with commit
+  git commit -F "$COMMIT_MSG_FILE"
+else
+  echo "Commit message was not saved or modified, commit aborted."
+  exit 0
+fi
+
+# Clean up
+rm -f "$COMMIT_MSG_FILE"
