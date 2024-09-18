@@ -75,6 +75,8 @@ and understanding of the project over time.
 - If multiple changes are present, make sure you capture them all in each commit
 message.
 
+- If there are no changes generate only one commit called 'No changes in diff'
+
 If there's multiple different kinds of changes present in one commit, you can write
 a commit message that includes multiple types, though this is generally discouraged. For example:
   
