@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# Check if there are any staged changes
+if git diff --cached --quiet; then
+  echo "No staged changes detected. Nothing to commit."
+  exit 0
+fi
+
 selected_commit_message=$(aichat "Please suggest 5 commit messages, given the following diff:
 
 \`\`\`diff
@@ -15,7 +22,6 @@ $(git --no-pager diff --no-color --no-ext-diff --cached)
 
 [optional footer]
 \`\`\` 
-
 
 2. **Relevance:** Avoid mentioning a module name unless it's directly relevant
 to the change.
@@ -39,7 +45,7 @@ $(git log -n 10 --pretty=format:'%h %s')
 **Output Template**
 
 Follow this output template and ONLY output raw commit messages without
-numbers or other decorations. Separat each commit message with \`---\`.
+numbers or other decorations. Separate each commit message with \`---\`.
 
 fix(app): add password regex pattern
 ---
@@ -74,8 +80,6 @@ and understanding of the project over time.
 
 - If multiple changes are present, make sure you capture them all in each commit
 message.
-
-- If there are no changes generate only one commit called 'No changes in diff'
 
 If there's multiple different kinds of changes present in one commit, you can write
 a commit message that includes multiple types, though this is generally discouraged. For example:
