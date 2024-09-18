@@ -106,7 +106,7 @@ Write your commit messages below in the format shown in Output Template section 
 
 if [ -z "$selected_commit_message" ]; then
   echo "No commit message selected."
-  exit 1
+  exit 0
 fi
 
 COMMIT_MSG_FILE=$(mktemp)
@@ -127,6 +127,7 @@ if [ "$CHECKSUM_BEFORE" != "$CHECKSUM_AFTER" ]; then
   git commit -F "$COMMIT_MSG_FILE"
 else
   echo "Commit message was not saved or modified, commit aborted."
+  exit 0
 fi
 
 # Clean up
