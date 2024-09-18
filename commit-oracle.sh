@@ -108,8 +108,22 @@ fi
 COMMIT_MSG_FILE=$(mktemp)
 printf "%s" "$selected_commit_message" >"$COMMIT_MSG_FILE"
 
-${EDITOR:-vim} "$COMMIT_MSG_FILE"
+# Store initial checksum
+CHECKSUM_BEFORE=$(shasum "$COMMIT_MSG_FILE" | awk '{ print $1 }')
 
-git commit -F "$COMMIT_MSG_FILE"
+# Open the editor
+"${EDITOR:-vim}" "$COMMIT_MSG_FILE"
 
+# Store checksum after editing
+CHECKSUM_AFTER=$(shasum "$COMMIT_MSG_FILE" | awk '{ print $1 }')
+
+# Compare checksums
+if [ "$CHECKSUM_BEFORE" != "$CHECKSUM_AFTER" ]; then
+  # Proceed with commit
+  git commit -F "$COMMIT_MSG_FILE"
+else
+  echo "Commit message was not saved or modified, commit aborted."
+fi
+
+# Clean up
 rm -f "$COMMIT_MSG_FILE"
